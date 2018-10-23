@@ -1,12 +1,16 @@
 Created: 2018 October
 
-Technologies: Swift 4.2, SwiftSocket 2.0.2, PinCodeTextField 0.1.0
+Technologies: Android SDK 16, com.chaos.view:pinview:1.4.2
+
+Design: MVP (Model=data, View=interface, Presenter=data/interface bridge,state controller)
 
 Usage: Game
 
-Cows and Bulls video game on iOS.
+Cows and Bulls video game on Android.
 
 Must be played on a LAN network. This is the numerical version of the popular code-breaking game "Cows and Bulls".
+
+Compatible with my iOS version of Cows and Bulls.
 
 # Main Screen
 ![alt text](https://github.com/felixisto/CowsAndBulls-Android/blob/master/Screenshots/scrn0.png)
