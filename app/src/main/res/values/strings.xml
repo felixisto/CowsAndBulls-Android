@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Cows &amp; Bulls</string>
+    <string name="host_screen_title">Host Game</string>
+    <string name="join_screen_title">Join Game</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
