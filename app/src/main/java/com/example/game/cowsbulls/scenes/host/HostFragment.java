@@ -1,5 +1,7 @@
 package com.example.game.cowsbulls.scenes.host;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.os.Bundle;
 import android.content.Context;
@@ -8,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.content.Intent;
+import android.widget.Button;
 import android.widget.TextView;
 import com.example.game.cowsbulls.R;
 import com.example.game.cowsbulls.scenes.gamesetup.GameSetupActivity;
@@ -99,5 +102,34 @@ public class HostFragment extends Fragment implements HostContract.View
     public void showOpponentQuit()
     {
         
+    }
+    
+    @Override
+    public void beginConnect()
+    {
+        
+    }
+    
+    @Override
+    public void timeout()
+    {
+        if (getView() == null) {return;}
+        
+        final Button connect = getView().findViewById(R.id.buttonConnect);
+        connect.setEnabled(true);
+        
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Connection timeout. Could not connect with client.");
+        builder.setCancelable(true);
+        
+        builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+                
+                presenter.start();
+            }
+        });
+        
+        builder.create().show();
     }
 }

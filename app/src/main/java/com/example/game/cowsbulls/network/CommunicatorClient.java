@@ -64,10 +64,7 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
             writer.stop();
         }
         
-        if (socket != null)
-        {
-            try {socket.close();} catch (Exception dummy) {}
-        }
+        if (socket != null) {try {socket.close();} catch (Exception dummy) {}}
         
         socket = null;
         reader = null;
@@ -94,6 +91,7 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
         hostAddress = host;
         
         // Attempt to start connection
+        new Thread(new CommunicatorClientConnection(this, host)).start();
         final CommunicatorClient communicator = this;
         
         new Thread(new CommunicatorClientConnection(communicator, host)).start();
@@ -101,6 +99,7 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
     
     protected void onBeginConnection(Socket socket, String host)
     {
+        Log.v("CommunicatorClient", "Beginning new connection with server on " + (new Date()).toString() + ". Waiting to be greeted by server...");
         Log.v("CommunicatorClient", "Beginning new connection with server on " + (new Date()).toString());
         
         this.socket = socket;
@@ -134,6 +133,9 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
             mainLoop.post(myRunnable);
             
             // Start the timeout check in a background thread
+            // If a formal connection is not established in @BEGIN_CONNECTION_TIMEOUT_IN_SECONDS seconds, terminate connection
+            new Thread(new CommunicatorClientTimeoutConnection(this)).start();
+            
             // If a formal connection is not established in @CommunicatorHostBeginConnectTimeout seconds, terminate connection
             final CommunicatorClient communicator = this;
             

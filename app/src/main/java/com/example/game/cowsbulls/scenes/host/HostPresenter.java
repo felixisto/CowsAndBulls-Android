@@ -32,6 +32,8 @@ public class HostPresenter implements HostContract.Presenter, CommunicatorObserv
     public void start()
     {
         Log.v("HostPresenter", "Start");
+        
+        communicator.start();
     }
     
     @Override
@@ -81,13 +83,21 @@ public class HostPresenter implements HostContract.Presenter, CommunicatorObserv
     @Override
     public void beginConnect()
     {
+        Log.v("HostPresenter", "Connected with client! Attempting to start formal connection!");
         
+        view.beginConnect();
     }
     
     @Override
     public void formallyConnected(CommunicatorInitialConnection data)
     {
+        Log.v("HostPresenter", "Connected formally with client! Going to game setup screen");
         
+        // Set the global shared communicator initial data for the application
+        SharedResources.getShared().setCommunicatorInitialConnection(data);
+        
+        // Go to next scene
+        view.goToGameSetupScreen();
     }
     
     @Override

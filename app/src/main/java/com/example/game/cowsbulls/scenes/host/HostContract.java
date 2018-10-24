@@ -18,5 +18,8 @@ public interface HostContract
         
         void showDisconnected();
         void showOpponentQuit();
+        
+        void beginConnect();
+        void timeout();
     }
 }

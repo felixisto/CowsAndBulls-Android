@@ -22,6 +22,7 @@ public class LocalAddress
                 }
             }
         } catch (Exception ignored) { } // for now eat exceptions
-        return "";
+        
+        return "Unknown";
     }
 }
