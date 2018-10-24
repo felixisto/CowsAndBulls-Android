@@ -154,12 +154,12 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
     protected void onFailureConnection(String host)
     {
         Log.v("CommunicatorClient", "Failed to start, could not find host.");
-    
+        
         reset();
-    
+        
         // Alert the observers in the main thread
         Handler mainLoop = new Handler(Looper.getMainLooper());
-    
+        
         Runnable myRunnable = new Runnable() {
             @Override
             public void run()
@@ -173,7 +173,7 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
                 }
             }
         };
-    
+        
         mainLoop.post(myRunnable);
     }
     
@@ -686,8 +686,7 @@ class CommunicatorClientConnection implements Runnable
             
             try {
                 socket = new Socket();
-                try { socket.setSoTimeout(100); } catch (Exception e) {}
-                socket.connect(new InetSocketAddress(host, CommunicatorClient.PORT));
+                socket.connect(new InetSocketAddress(host, CommunicatorClient.PORT), 100);
                 
                 // Success!
                 delegate.onBeginConnection(socket, host);
