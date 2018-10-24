@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.chaos.view:pinview-1.4.2">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/pinview-1.4.2.aar/db3bc1d43da1bbac5fcab9faf3abe235/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/pinview-1.4.2.aar/db3bc1d43da1bbac5fcab9faf3abe235/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.chaos.view/pinview/1.4.2/e1a4d7d309507295d4782a33c83a6769fd96b987/pinview-1.4.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
