@@ -2,7 +2,6 @@ package com.example.game.cowsbulls.scenes.gamesession;
 
 import com.example.game.cowsbulls.BasePresenter;
 import com.example.game.cowsbulls.BaseView;
-import com.example.game.cowsbulls.game.GameSession;
 
 public interface GameSessionContract
 {
@@ -10,8 +9,6 @@ public interface GameSessionContract
     {
         void goToGameplayScreen(String guessWord);
         void leave();
-        
-        void prepareForNewGame();
     }
     
     interface View extends BaseView<GameSessionContract.Presenter>
@@ -21,6 +18,7 @@ public interface GameSessionContract
         void setOpponentStatus(String status);
         void updateEnterXCharacterWord(int length);
         void updateConnectionData(String playerName, String playerAddress);
+        void nextGame();
         
         void lostConnectionAttemptingToReconnect();
         void reconnected();

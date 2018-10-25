@@ -2,7 +2,6 @@ package com.example.game.cowsbulls.network;
 
 import android.os.Handler;
 import android.os.Looper;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

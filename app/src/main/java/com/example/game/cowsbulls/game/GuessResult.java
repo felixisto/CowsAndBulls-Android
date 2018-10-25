@@ -13,7 +13,7 @@ public class GuessResult
     {
         this.guessWordLength = guessWordLength;
         this.message = GuessCharacterResult.arrayToString(this.guessWordLength, characterGuesses);
-        this.messageWithGuess = guess + ", " + message;
+        this.messageWithGuess = "guessed " + guess + ", that's " + message + "!";
         this.characterGuesses = characterGuesses;
     }
     
@@ -178,6 +178,11 @@ class GuessCharacterResult
         if (cows == 0 && bulls != 0)
         {
             return String.valueOf(bulls) + " bulls";
+        }
+        
+        if (cows == 0 && bulls == 0)
+        {
+            return "nothing";
         }
         
         return String.valueOf(cows) + " cows, " + String.valueOf(bulls) + " bulls";

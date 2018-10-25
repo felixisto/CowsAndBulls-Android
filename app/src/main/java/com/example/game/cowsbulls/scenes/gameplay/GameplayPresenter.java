@@ -1,6 +1,9 @@
 package com.example.game.cowsbulls.scenes.gameplay;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
+import java.util.ArrayList;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.example.game.cowsbulls.game.GameError;
 import com.example.game.cowsbulls.game.GameSession;
@@ -10,8 +13,6 @@ import com.example.game.cowsbulls.network.CommunicatorInitialConnection;
 import com.example.game.cowsbulls.network.CommunicatorObserver;
 import com.example.game.cowsbulls.shared.SharedResources;
 
-import java.util.ArrayList;
-
 public class GameplayPresenter implements GameplayContract.Presenter, CommunicatorObserver
 {
     private GameplayContract.View view;
@@ -19,29 +20,19 @@ public class GameplayPresenter implements GameplayContract.Presenter, Communicat
     private CommunicatorInitialConnection initialConnection;
     private GameSession gameSession;
     
-    public GameplayPresenter(GameplayContract.View view, Communicator communicator, CommunicatorInitialConnection initialConnection, GameSession gameSession)
+    public GameplayPresenter(@NonNull GameplayContract.View view, @NonNull Communicator communicator, @NonNull CommunicatorInitialConnection initialConnection, @NonNull GameSession gameSession)
     {
-        this.view = view;
-    
-        this.communicator = communicator;
-    
-        if (this.communicator == null)
-        {
-            this.communicator = SharedResources.getShared().getCommunicator();
-        }
+        this.view = checkNotNull(view, "View cannot be null");
+        
+        this.communicator = checkNotNull(communicator, "Communicator cannot be null");
         
         this.communicator.attachObserver(this, Integer.toHexString(System.identityHashCode(this)));
-        
-        this.initialConnection = initialConnection;
     
-        if (this.initialConnection == null)
-        {
-            this.initialConnection = SharedResources.getShared().getCommunicatorInitialConnection();
-        }
+        this.initialConnection = checkNotNull(initialConnection, "InitialConnection cannot be null");
     
         this.view.setPresenter(this);
         
-        this.gameSession = gameSession;
+        this.gameSession = checkNotNull(gameSession, "GameSession cannot be null");
     }
     
     public static boolean guessWordIsValid(String guessWord)
@@ -98,7 +89,9 @@ public class GameplayPresenter implements GameplayContract.Presenter, Communicat
     @Override
     public void goBack()
     {
-        Log.v("GameplayPresenter", "Go back");
+        Log.v("GameplayPresenter", "Go back, play another game");
+        
+        communicator.sendGameNextMessage();
         
         communicator.detachObserver(Integer.toHexString(System.identityHashCode(this)));
         
@@ -177,6 +170,12 @@ public class GameplayPresenter implements GameplayContract.Presenter, Communicat
     
     @Override
     public void opponentPickedPlaySession() {}
+    
+    @Override
+    public void nextGame()
+    {
+        
+    }
     
     @Override
     public void opponentGuess(String guess) 

@@ -13,4 +13,6 @@ public class CommunicatorCommands
     static final String GAMEGUESS = "GUESS";
     static final String GAMEGUESSRESPONSE = "GRESP";
     static final String GAMECORRECTGUESS = "GCORR";
+    
+    static final String GAMENEXT = "GAMNX";
 }

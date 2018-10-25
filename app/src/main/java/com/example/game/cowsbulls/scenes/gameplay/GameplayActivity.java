@@ -6,11 +6,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import com.chaos.view.PinView;
 import com.example.game.cowsbulls.R;
 import com.example.game.cowsbulls.network.Communicator;
-import com.example.game.cowsbulls.scenes.gamesession.GameSessionFragment;
-import com.example.game.cowsbulls.scenes.gamesession.GameSessionPresenter;
 import com.example.game.cowsbulls.shared.SharedResources;
 
 public class GameplayActivity extends AppCompatActivity

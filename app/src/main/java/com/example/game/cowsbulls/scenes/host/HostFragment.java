@@ -10,17 +10,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.content.Intent;
-import android.widget.Button;
 import android.widget.TextView;
+
 import com.example.game.cowsbulls.R;
 import com.example.game.cowsbulls.scenes.gamesetup.GameSetupActivity;
-import com.example.game.cowsbulls.network.Communicator;
 import com.example.game.cowsbulls.network.LocalAddress;
-import com.example.game.cowsbulls.shared.SharedResources;
+import com.example.game.cowsbulls.scenes.main.MainActivity;
 
 public class HostFragment extends Fragment implements HostContract.View
 {
     private HostContract.Presenter presenter;
+    
+    private TextView labelTip;
     
     public HostFragment()
     {
@@ -42,6 +43,9 @@ public class HostFragment extends Fragment implements HostContract.View
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_host_screen, container, false);
+        
+        // Setup UI references
+        labelTip = root.findViewById(R.id.labelTip);
         
         // Setup UI
         final TextView localIP = root.findViewById(R.id.labelLocalIP);
@@ -81,6 +85,10 @@ public class HostFragment extends Fragment implements HostContract.View
     public void goBack()
     {
         Log.v("HostFragment", "Go back");
+        
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
     
     @Override
@@ -105,18 +113,15 @@ public class HostFragment extends Fragment implements HostContract.View
     }
     
     @Override
-    public void beginConnect()
+    public void clientBeginConnect()
     {
-        
+        labelTip.setText("Found a client! Connecting...");
     }
     
     @Override
-    public void timeout()
+    public void clientTimeout()
     {
-        if (getView() == null) {return;}
-        
-        final Button connect = getView().findViewById(R.id.buttonConnect);
-        connect.setEnabled(true);
+        labelTip.setText("Waiting for other player to join...");
         
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Connection timeout. Could not connect with client.");
@@ -127,6 +132,24 @@ public class HostFragment extends Fragment implements HostContract.View
                 dialog.cancel();
                 
                 presenter.start();
+            }
+        });
+        
+        builder.create().show();
+    }
+    
+    @Override
+    public void failedToStart(String error)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Failed to start server. Error: " + error);
+        builder.setCancelable(true);
+        
+        builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+                
+                presenter.leave();
             }
         });
         

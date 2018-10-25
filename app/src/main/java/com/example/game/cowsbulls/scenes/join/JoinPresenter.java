@@ -1,9 +1,9 @@
 package com.example.game.cowsbulls.scenes.join;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.example.game.cowsbulls.game.GameConstants;
-import com.example.game.cowsbulls.game.GameTurn;
 import com.example.game.cowsbulls.network.CommunicatorClient;
 import com.example.game.cowsbulls.network.CommunicatorInitialConnection;
 import com.example.game.cowsbulls.network.CommunicatorObserver;
@@ -14,9 +14,9 @@ public class JoinPresenter implements JoinContract.Presenter, CommunicatorObserv
     private JoinContract.View view;
     private CommunicatorClient communicator;
     
-    public JoinPresenter(JoinContract.View view)
+    public JoinPresenter(@NonNull JoinContract.View view)
     {
-        this.view = view;
+        this.view = checkNotNull(view, "View cannot be null");
         
         this.view.setPresenter(this);
     }
@@ -46,10 +46,13 @@ public class JoinPresenter implements JoinContract.Presenter, CommunicatorObserv
     public void leave()
     {
         Log.v("JoinPresenter", "Stop");
-    
-        communicator.detachObserver(Integer.toHexString(System.identityHashCode(this)));
         
-        communicator.destroy();
+        if (communicator != null)
+        {
+            communicator.detachObserver(Integer.toHexString(System.identityHashCode(this)));
+            
+            communicator.destroy();
+        }
         
         view.goBack();
     }
@@ -119,6 +122,12 @@ public class JoinPresenter implements JoinContract.Presenter, CommunicatorObserv
     
     @Override
     public void opponentPickedPlaySession() {}
+    
+    @Override
+    public void nextGame()
+    {
+        
+    }
     
     @Override
     public void opponentGuess(String guess) {}

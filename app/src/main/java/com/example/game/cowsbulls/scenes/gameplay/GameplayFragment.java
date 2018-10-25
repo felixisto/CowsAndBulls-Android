@@ -14,16 +14,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.chaos.view.PinView;
 import com.example.game.cowsbulls.R;
-import com.example.game.cowsbulls.scenes.gamesession.GameSessionActivity;
 import com.example.game.cowsbulls.scenes.main.MainActivity;
-
-import java.util.Objects;
+import com.chaos.view.PinView;
 
 public class GameplayFragment extends Fragment implements GameplayContract.View
 {
@@ -39,6 +35,7 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
     private TextView labelStatus;
     
     private View layoutGuess;
+    private Button buttonGuessCancel;
     private TextView labelGuessOpponentWord;
     private PinView pinentry;
     
@@ -77,6 +74,7 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
         labelStatus = root.findViewById(R.id.labelStatus);
         
         layoutGuess = root.findViewById(R.id.layoutGuess);
+        buttonGuessCancel = root.findViewById(R.id.buttonGuessCancel);
         labelGuessOpponentWord = root.findViewById(R.id.labelGuessOpponentWord);
         pinentry = root.findViewById(R.id.pinentry);
         
@@ -119,6 +117,22 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
         
             @Override
             public void afterTextChanged(Editable s) {}
+        });
+    
+        buttonGuessCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                // Hide keyboard, lose focus
+                pinentry.clearFocus();
+                
+                // Reset pincode text
+                pinentry.setText("");
+                
+                // Hide pincode layout, show everything else
+                layoutBase.setVisibility(View.VISIBLE);
+                layoutGuess.setVisibility(View.INVISIBLE);
+            }
         });
         
         layoutOutcome.setOnClickListener(new View.OnClickListener() {

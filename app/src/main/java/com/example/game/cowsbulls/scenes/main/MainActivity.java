@@ -1,11 +1,10 @@
 package com.example.game.cowsbulls.scenes.main;
 
-import com.example.game.cowsbulls.R;
-
-import android.util.Log;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentActivity;
+
+import com.example.game.cowsbulls.R;
 
 public class MainActivity extends FragmentActivity 
 {

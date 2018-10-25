@@ -2,13 +2,11 @@ package com.example.game.cowsbulls.network;
 
 import android.os.Looper;
 import android.util.Log;
-
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
-
 import android.os.Handler;
 
 import com.example.game.cowsbulls.utilities.UserName;
@@ -93,14 +91,11 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
         // Attempt to start connection
         new Thread(new CommunicatorClientConnection(this, host)).start();
         final CommunicatorClient communicator = this;
-        
-        new Thread(new CommunicatorClientConnection(communicator, host)).start();
     }
     
     protected void onBeginConnection(Socket socket, String host)
     {
         Log.v("CommunicatorClient", "Beginning new connection with server on " + (new Date()).toString() + ". Waiting to be greeted by server...");
-        Log.v("CommunicatorClient", "Beginning new connection with server on " + (new Date()).toString());
         
         this.socket = socket;
         
@@ -153,7 +148,7 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
     
     protected void onFailureConnection(String host)
     {
-        Log.v("CommunicatorClient", "Failed to start, could not find host.");
+        Log.v("CommunicatorClient", "Failed to start, could not find host." + Thread.currentThread().getName());
         
         reset();
         
@@ -462,6 +457,15 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
         writer.send(message.getData());
     }
     
+    @Override
+    public void sendGameNextMessage()
+    {
+        Log.v("CommunicatorClient", "Sending next game message to server");
+        
+        CommunicatorMessage message = CommunicatorMessage.createWriteMessage(CommunicatorCommands.GAMENEXT);
+        writer.send(message.getData());
+    }
+    
     // - CommunicatorReaderDelegate interface -
     
     @Override
@@ -489,6 +493,8 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
     @Override
     public void messageReceived(String command, final String parameter)
     {
+        Log.v("CommunicatorClient", "Received host message " + command);
+        
         if (!isConnectedToServer)
         {
             return;
@@ -513,7 +519,7 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
                 
                 // Alert the observers in the main thread
                 Handler mainLoop = new Handler(Looper.getMainLooper());
-    
+                
                 Runnable myRunnable = new Runnable() {
                     @Override
                     public void run()
@@ -553,7 +559,7 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
             case CommunicatorCommands.GAMEGUESS: {
                 // Alert the observers in the main thread
                 Handler mainLoop = new Handler(Looper.getMainLooper());
-    
+                
                 Runnable myRunnable = new Runnable() {
                     @Override
                     public void run()
@@ -567,13 +573,13 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
                         }
                     }
                 };
-    
+                
                 mainLoop.post(myRunnable);
                 break; }
             case CommunicatorCommands.GAMEGUESSRESPONSE: {
                 // Alert the observers in the main thread
                 Handler mainLoop = new Handler(Looper.getMainLooper());
-    
+                
                 Runnable myRunnable = new Runnable() {
                     @Override
                     public void run()
@@ -587,13 +593,13 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
                         }
                     }
                 };
-    
+                
                 mainLoop.post(myRunnable);
                 break; }
             case CommunicatorCommands.GAMECORRECTGUESS: {
                 // Alert the observers in the main thread
                 Handler mainLoop = new Handler(Looper.getMainLooper());
-    
+                
                 Runnable myRunnable = new Runnable() {
                     @Override
                     public void run()
@@ -607,7 +613,27 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
                         }
                     }
                 };
-    
+                
+                mainLoop.post(myRunnable);
+                break; }
+            case CommunicatorCommands.GAMENEXT: {
+                // Alert the observers in the main thread
+                Handler mainLoop = new Handler(Looper.getMainLooper());
+                
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        for (CommunicatorObserverValue observerValue : observers.values())
+                        {
+                            if (observerValue.value() != null)
+                            {
+                                observerValue.value().nextGame();
+                            }
+                        }
+                    }
+                };
+                
                 mainLoop.post(myRunnable);
                 break; }
         }

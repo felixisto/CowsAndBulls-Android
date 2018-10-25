@@ -19,18 +19,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import java.util.ArrayList;
+import java.util.List;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.example.game.cowsbulls.R;
 import com.example.game.cowsbulls.game.GameConstants;
 import com.example.game.cowsbulls.game.GameTurn;
-import com.example.game.cowsbulls.network.Communicator;
-import com.example.game.cowsbulls.network.CommunicatorInitialConnection;
 import com.example.game.cowsbulls.scenes.gamesession.GameSessionActivity;
 import com.example.game.cowsbulls.scenes.main.MainActivity;
-import com.example.game.cowsbulls.shared.SharedResources;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GameSetupFragment extends Fragment implements GameSetupContract.View
 {
@@ -38,6 +35,12 @@ public class GameSetupFragment extends Fragment implements GameSetupContract.Vie
     
     private GameSetupPickerAdapter numberOfCharactersAdapter;
     private GameSetupPickerAdapter turnsAdapter;
+    
+    private Spinner pickerNumberOfCharacters;
+    private Spinner pickerTurnToGo;
+    private Button buttonAgree;
+    private TextView labelTip;
+    private TextView labelOpponentStatus;
     
     public GameSetupFragment()
     {
@@ -60,9 +63,14 @@ public class GameSetupFragment extends Fragment implements GameSetupContract.Vie
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_gamesetup_screen, container, false);
         
-        // Setup UI
-        final Spinner pickerNumberOfCharacters = root.findViewById(R.id.pickerNumberOfCharacters);
+        // Setup UI references
+        this.pickerNumberOfCharacters = root.findViewById(R.id.pickerNumberOfCharacters);
+        this.pickerTurnToGo = root.findViewById(R.id.pickerTurnToGo);
+        this.buttonAgree = root.findViewById(R.id.buttonAgree);
+        this.labelTip = root.findViewById(R.id.labelInfo);
+        this.labelOpponentStatus = root.findViewById(R.id.labelOpponentStatus);
         
+        // Setup UI
         ArrayList<String> numberOfCharacters = new ArrayList<>();
         
         for (int e = GameConstants.GUESS_WORD_CHARACTER_COUNT_MIN; e <= GameConstants.GUESS_WORD_CHARACTER_COUNT_MAX; e++) 
@@ -72,7 +80,7 @@ public class GameSetupFragment extends Fragment implements GameSetupContract.Vie
         
         this.numberOfCharactersAdapter = new GameSetupPickerAdapter(getContext(), numberOfCharacters);
         pickerNumberOfCharacters.setAdapter(this.numberOfCharactersAdapter);
-    
+        
         pickerNumberOfCharacters.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
@@ -84,8 +92,6 @@ public class GameSetupFragment extends Fragment implements GameSetupContract.Vie
             public void onNothingSelected(AdapterView<?> parent) {}
         });
         
-        final Spinner pickerTurnToGo = root.findViewById(R.id.pickerTurnToGo);
-        
         ArrayList<String> turnsToGo = new ArrayList<>();
         
         turnsToGo.add(GameTurn.FIRST.value);
@@ -93,7 +99,7 @@ public class GameSetupFragment extends Fragment implements GameSetupContract.Vie
         
         this.turnsAdapter = new GameSetupPickerAdapter(getContext(), turnsToGo);
         pickerTurnToGo.setAdapter(this.turnsAdapter);
-    
+        
         pickerTurnToGo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) 
@@ -105,9 +111,6 @@ public class GameSetupFragment extends Fragment implements GameSetupContract.Vie
             public void onNothingSelected(AdapterView<?> parent) {}
         });
         
-        
-        final Button buttonAgree = root.findViewById(R.id.buttonAgree);
-    
         buttonAgree.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -141,7 +144,7 @@ public class GameSetupFragment extends Fragment implements GameSetupContract.Vie
     }
     
     // - View interface -
-
+    
     @Override
     public void setPresenter(GameSetupContract.Presenter presenter)
     {
@@ -169,8 +172,6 @@ public class GameSetupFragment extends Fragment implements GameSetupContract.Vie
     @Override
     public void updateOpponentPlaySetup(int guessWordLength, String turnToGo)
     {
-        final TextView labelOpponentStatus = getView().findViewById(R.id.labelOpponentStatus);
-        
         labelOpponentStatus.setText("Opponent wants " + String.valueOf(guessWordLength) + " digit guess words and wants " + turnToGo + " turn");
     }
     
@@ -195,8 +196,6 @@ public class GameSetupFragment extends Fragment implements GameSetupContract.Vie
                 
                 if (getView() != null)
                 {
-                    final Button buttonAgree = getView().findViewById(R.id.buttonAgree);
-                    
                     if (buttonAgree != null)
                     {
                         buttonAgree.setEnabled(true);
@@ -211,16 +210,12 @@ public class GameSetupFragment extends Fragment implements GameSetupContract.Vie
     @Override
     public void updateConnectionData(String playerName, String playerAddress)
     {
-        final TextView labelTip = getView().findViewById(R.id.labelInfo);
-        
         labelTip.setText("Opponent: " + playerName + " (" + playerAddress + ")");
     }
     
     @Override
     public void lostConnectionAttemptingToReconnect()
     {
-        if (getView() == null) {return;}
-        
         Snackbar snackbar = Snackbar.make(getView(), "Lost connection, attempting to reconnect...", Snackbar.LENGTH_LONG);
         
         snackbar.show();
@@ -229,8 +224,6 @@ public class GameSetupFragment extends Fragment implements GameSetupContract.Vie
     @Override
     public void reconnected()
     {
-        if (getView() == null) {return;}
-        
         Snackbar snackbar = Snackbar.make(getView(), "Reconnected!", Snackbar.LENGTH_LONG);
         
         snackbar.show();
@@ -287,11 +280,11 @@ class GameSetupPickerAdapter extends ArrayAdapter<String>
         }
         
         String currentString = data.get(position);
-    
-        TextView title =  (TextView)listItem.findViewById(R.id.title);
-    
+        
+        TextView title = checkNotNull((TextView)listItem.findViewById(R.id.title), "Array adapter is expecting a valid text view title");
+        
         title.setText(currentString);
-    
+        
         title.setGravity(Gravity.CENTER);
         
         return listItem;

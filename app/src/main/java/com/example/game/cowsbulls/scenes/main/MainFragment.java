@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.content.Intent;
 import android.widget.Button;
+
 import com.example.game.cowsbulls.R;
 import com.example.game.cowsbulls.scenes.host.HostActivity;
 import com.example.game.cowsbulls.scenes.join.JoinActivity;

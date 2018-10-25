@@ -1,7 +1,5 @@
 package com.example.game.cowsbulls.game;
 
-import android.util.Log;
-
 public class GameTurn
 {
     public static final GameTurn FIRST = new GameTurn("First");

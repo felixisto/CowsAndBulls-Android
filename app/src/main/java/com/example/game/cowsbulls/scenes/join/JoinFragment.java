@@ -15,12 +15,13 @@ import android.widget.EditText;
 
 import com.example.game.cowsbulls.R;
 import com.example.game.cowsbulls.scenes.gamesetup.GameSetupActivity;
-import com.example.game.cowsbulls.network.Communicator;
-import com.example.game.cowsbulls.shared.SharedResources;
 
 public class JoinFragment extends Fragment implements JoinContract.View
 {
     private JoinContract.Presenter presenter;
+    
+    private Button buttonConnect;
+    private EditText fieldHostAddress;
     
     public JoinFragment()
     {
@@ -43,19 +44,17 @@ public class JoinFragment extends Fragment implements JoinContract.View
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_join_screen, container, false);
         
-        // Setup UI
-        final Button connect = root.findViewById(R.id.buttonConnect);
+        // Setup UI references
+        this.buttonConnect = root.findViewById(R.id.buttonConnect);
+        this.fieldHostAddress = root.findViewById(R.id.fieldHostAddress);
         
-        connect.setOnClickListener(new View.OnClickListener() {
+        // Setup UI
+        buttonConnect.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-    
-                if (getView() == null) {return;}
+                presenter.tryConnectingToHost(fieldHostAddress.getText().toString());
                 
-                final EditText fieldHost = getView().findViewById(R.id.fieldHostAddress);
-                
-                presenter.tryConnectingToHost(fieldHost.getText().toString());
-                
-                connect.setEnabled(false);
+                buttonConnect.setEnabled(false);
+                fieldHostAddress.setEnabled(false);
             }
         });
         
@@ -125,10 +124,8 @@ public class JoinFragment extends Fragment implements JoinContract.View
     @Override
     public void connectionFailure(String error)
     {
-        if (getView() == null) {return;}
-        
-        final Button connect = getView().findViewById(R.id.buttonConnect);
-        connect.setEnabled(true);
+        buttonConnect.setEnabled(true);
+        fieldHostAddress.setEnabled(true);
         
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Could not find host server.");
@@ -146,10 +143,8 @@ public class JoinFragment extends Fragment implements JoinContract.View
     @Override
     public void timeout()
     {
-        if (getView() == null) {return;}
-        
-        final Button connect = getView().findViewById(R.id.buttonConnect);
-        connect.setEnabled(true);
+        buttonConnect.setEnabled(true);
+        fieldHostAddress.setEnabled(true);
         
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Connection timeout. Could not connect with server.");

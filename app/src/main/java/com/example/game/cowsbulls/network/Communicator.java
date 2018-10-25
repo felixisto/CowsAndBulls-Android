@@ -13,4 +13,5 @@ public interface Communicator
     void sendGuessMessage(String guess);
     void sendGuessIncorrectResponseMessage(String response);
     void sendGuessCorrectResponseMessage();
+    void sendGameNextMessage();
 }

@@ -3,18 +3,17 @@ package com.example.game.cowsbulls.network;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-
-import com.example.game.cowsbulls.utilities.UserName;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import com.example.game.cowsbulls.utilities.UserName;
+
 public class CommunicatorHost implements Communicator, CommunicatorReaderDelegate, CommunicatorWriterDelegate
 {
     static final int PORT = 1337;
-    static final int CONNECTION_TIMEOUT_IN_SECONDS = 10;
     static final int BEGIN_CONNECTION_TIMEOUT_IN_SECONDS = 3;
     static final double PING_DELAY_MINIMUM = 0.4;
     static final double PING_TIMEOUT = 10.0;
@@ -84,7 +83,7 @@ public class CommunicatorHost implements Communicator, CommunicatorReaderDelegat
         
         try {
             server = new ServerSocket(PORT);
-    
+            
             try { server.setSoTimeout(100); } catch (Exception e) {}
             
             Log.v("CommunicatorHost", "Server started.");
@@ -142,9 +141,9 @@ public class CommunicatorHost implements Communicator, CommunicatorReaderDelegat
         catch (Exception e)
         {
             Log.v("CommunicatorHost", "Failed to open read or write stream, error: " + e.toString());
-        
+            
             onTimeout();
-        
+            
             return;
         }
         
@@ -398,6 +397,15 @@ public class CommunicatorHost implements Communicator, CommunicatorReaderDelegat
         writer.send(message.getData());
     }
     
+    @Override
+    public void sendGameNextMessage()
+    {
+        Log.v("CommunicatorHost", "Sending next game message to client");
+    
+        CommunicatorMessage message = CommunicatorMessage.createWriteMessage(CommunicatorCommands.GAMENEXT);
+        writer.send(message.getData());
+    }
+    
     // - CommunicatorReaderDelegate interface -
     
     @Override
@@ -425,6 +433,8 @@ public class CommunicatorHost implements Communicator, CommunicatorReaderDelegat
     @Override
     public void messageReceived(String command, final String parameter)
     {
+        Log.v("CommunicatorHost", "Received client message " + command);
+        
         if (!isConnectedToClient)
         {
             return;
@@ -546,6 +556,26 @@ public class CommunicatorHost implements Communicator, CommunicatorReaderDelegat
                 
                 mainLoop.post(myRunnable);
                 break; }
+            case CommunicatorCommands.GAMENEXT: {
+                // Alert the observers in the main thread
+                Handler mainLoop = new Handler(Looper.getMainLooper());
+                
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        for (CommunicatorObserverValue observerValue : observers.values())
+                        {
+                            if (observerValue.value() != null)
+                            {
+                                observerValue.value().nextGame();
+                            }
+                        }
+                    }
+                };
+                
+                mainLoop.post(myRunnable);
+                break; }
         }
     }
     
@@ -572,7 +602,7 @@ public class CommunicatorHost implements Communicator, CommunicatorReaderDelegat
             if (noPingReceivedShort)
             {
                 boolean pingTimeout = timeElapsedSinceLastPing >= PING_TIMEOUT;
-            
+                
                 // Timeout, end the connection
                 if (pingTimeout)
                 {
@@ -654,7 +684,7 @@ class CommunicatorHostTimeoutConnection implements Runnable
     {
         try
         {
-            TimeUnit.SECONDS.sleep(CommunicatorClient.BEGIN_CONNECTION_TIMEOUT_IN_SECONDS);
+            TimeUnit.SECONDS.sleep(CommunicatorHost.BEGIN_CONNECTION_TIMEOUT_IN_SECONDS);
         }
         catch (Exception e)
         {

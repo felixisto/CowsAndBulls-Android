@@ -14,19 +14,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import com.chaos.view.PinView;
 import com.example.game.cowsbulls.R;
-import com.example.game.cowsbulls.game.GameSession;
 import com.example.game.cowsbulls.scenes.gameplay.GameplayActivity;
 import com.example.game.cowsbulls.scenes.main.MainActivity;
+import com.chaos.view.PinView;
+
+import org.w3c.dom.Text;
 
 public class GameSessionFragment extends Fragment implements GameSessionContract.View
 {
     private GameSessionContract.Presenter presenter;
+    
+    private PinView pinentry;
+    private TextView labelInfo;
+    private TextView labelTip;
+    private TextView labelOpponentStatus;
     
     public GameSessionFragment()
     {
@@ -49,9 +53,13 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_gamesession_screen, container, false);
         
-        // Setup UI
-        final PinView pinentry = root.findViewById(R.id.pinentry);
+        // Setup UI references
+        pinentry = root.findViewById(R.id.pinentry);
+        labelInfo = root.findViewById(R.id.labelInfo);
+        labelTip = root.findViewById(R.id.labelTip);
+        labelOpponentStatus = root.findViewById(R.id.labelOpponentStatus);
         
+        // Setup UI
         pinentry.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -97,17 +105,6 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
         super.onDetach();
     }
     
-    private void prepareForNewGame()
-    {
-        presenter.prepareForNewGame();
-        
-        final PinView pinentry = getView().findViewById(R.id.pinentry);
-        pinentry.setText("");
-        
-        final TextView labelOpponentStatus = getView().findViewById(R.id.labelOpponentStatus);
-        labelOpponentStatus.setText("Opponent is picking a guess word...");
-    }
-    
     // - View interface -
     
     @Override
@@ -131,7 +128,9 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         
-        prepareForNewGame();
+        pinentry.setText("");
+        labelOpponentStatus.setText("Waiting for opponent to leave outcome screen...");
+        pinentry.setEnabled(false);
     }
     
     @Override
@@ -144,16 +143,8 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
         builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
-                
-                if (getView() != null)
-                {
-                    final PinView pinentry = getView().findViewById(R.id.pinentry);
-                    
-                    if (pinentry != null)
-                    {
-                        pinentry.setText("");
-                    }
-                }
+    
+                pinentry.setText("");
             }
         });
         
@@ -171,11 +162,7 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
     @Override
     public void updateEnterXCharacterWord(int length)
     {
-        final TextView labelTip = getView().findViewById(R.id.labelTip);
-    
         labelTip.setText("Enter " + String.valueOf(length) + " digit guess word");
-        
-        final PinView pinentry = getView().findViewById(R.id.pinentry);
         
         pinentry.setItemCount(length);
         
@@ -184,16 +171,19 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
     @Override
     public void updateConnectionData(String playerName, String playerAddress)
     {
-        final TextView labelTip = getView().findViewById(R.id.labelInfo);
-        
-        labelTip.setText("Opponent: " + playerName + " (" + playerAddress + ")");
+        labelInfo.setText("Opponent: " + playerName + " (" + playerAddress + ")");
+    }
+    
+    @Override
+    public void nextGame()
+    {
+        pinentry.setEnabled(true);
+        labelOpponentStatus.setText("Opponent is picking guess word...");
     }
     
     @Override
     public void lostConnectionAttemptingToReconnect()
     {
-        if (getView() == null) {return;}
-        
         Snackbar snackbar = Snackbar.make(getView(), "Lost connection, attempting to reconnect...", Snackbar.LENGTH_LONG);
         
         snackbar.show();
@@ -202,8 +192,6 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
     @Override
     public void reconnected()
     {
-        if (getView() == null) {return;}
-        
         Snackbar snackbar = Snackbar.make(getView(), "Reconnected!", Snackbar.LENGTH_LONG);
         
         snackbar.show();

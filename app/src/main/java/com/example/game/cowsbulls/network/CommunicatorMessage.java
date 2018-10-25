@@ -18,6 +18,11 @@ public class CommunicatorMessage
     
     public static CommunicatorMessage createWriteMessage(String command)
     {
+        if (command.length() != MESSAGE_COMMAND_LENGTH)
+        {
+            return null;
+        }
+        
         CommunicatorMessage m = new CommunicatorMessage(MESSAGE_PARAMETER_LENGTH, command, "");
         
         m.fillMessage();
@@ -27,6 +32,11 @@ public class CommunicatorMessage
     
     public static CommunicatorMessage createWriteMessage(String command, String parameter)
     {
+        if (command.length() != MESSAGE_COMMAND_LENGTH)
+        {
+            return null;
+        }
+        
         CommunicatorMessage m = new CommunicatorMessage(MESSAGE_PARAMETER_LENGTH, command, parameter);
         
         m.fillMessage();
@@ -36,6 +46,11 @@ public class CommunicatorMessage
     
     public static CommunicatorMessage createWriteMessage(String command, String parameter1, String parameter2)
     {
+        if (command.length() != MESSAGE_COMMAND_LENGTH)
+        {
+            return null;
+        }
+        
         CommunicatorMessage m = new CommunicatorMessage(MESSAGE_PARAMETER_LENGTH, command, parameter1 + " " + parameter2);
         
         m.fillMessage();

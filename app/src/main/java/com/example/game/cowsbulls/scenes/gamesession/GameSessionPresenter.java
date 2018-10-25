@@ -1,6 +1,9 @@
 package com.example.game.cowsbulls.scenes.gamesession;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
+import java.util.ArrayList;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.example.game.cowsbulls.game.GameSession;
 import com.example.game.cowsbulls.game.GameTurn;
@@ -9,61 +12,43 @@ import com.example.game.cowsbulls.network.CommunicatorInitialConnection;
 import com.example.game.cowsbulls.network.CommunicatorObserver;
 import com.example.game.cowsbulls.shared.SharedResources;
 
-import java.util.ArrayList;
-
 public class GameSessionPresenter implements GameSessionContract.Presenter, CommunicatorObserver
 {
     private GameSessionContract.View view;
     private Communicator communicator;
     private CommunicatorInitialConnection initialConnection;
     
-    private boolean isActive;
-    
     private final int guessWordLength;
     private GameTurn turnToGo;
     
     private String guessWordPicked;
-    private int turnValue;
     
     private boolean opponentHasPickedGuessWord;
-    private int opponentPickedTurn;
     
-    public GameSessionPresenter(GameSessionContract.View view, Communicator communicator, CommunicatorInitialConnection initialConnection, int guessWordLength, String turnToGo)
-    {
-        this.view = view;
-        
-        this.communicator = communicator;
+    private boolean waitingForNextGame;
     
-        if (this.communicator == null)
-        {
-            this.communicator = SharedResources.getShared().getCommunicator();
-        }
-        
+    public GameSessionPresenter(@NonNull GameSessionContract.View view, @NonNull Communicator communicator, @NonNull CommunicatorInitialConnection initialConnection, int guessWordLength, @NonNull String turnToGo) {
+        this.view = checkNotNull(view, "View cannot be null");
+    
+        this.communicator = checkNotNull(communicator, "Communicator cannot be null");
+    
         this.communicator.attachObserver(this, Integer.toHexString(System.identityHashCode(this)));
-        
-        this.initialConnection = initialConnection;
     
-        if (this.initialConnection == null)
-        {
-            this.initialConnection = SharedResources.getShared().getCommunicatorInitialConnection();
-        }
+        this.initialConnection = checkNotNull(initialConnection, "InitialConnection cannot be null");
     
         this.view.setPresenter(this);
-        
-        this.isActive = false;
-        
+    
         this.guessWordLength = guessWordLength;
-        this.turnToGo = GameTurn.create(turnToGo);
-        
-        if (this.turnToGo == null)
-        {
+        this.turnToGo = GameTurn.create(checkNotNull(turnToGo, "Turn to go cannot be null"));
+    
+        if (this.turnToGo == null) {
             this.turnToGo = GameTurn.FIRST;
         }
-        
+    
         this.guessWordPicked = "";
-        this.turnValue = 0;
         this.opponentHasPickedGuessWord = false;
-        this.opponentPickedTurn = 0;
+        
+        this.waitingForNextGame = false;
     }
     
     public static boolean guessWordIsValid(String guessWord)
@@ -89,14 +74,21 @@ public class GameSessionPresenter implements GameSessionContract.Presenter, Comm
         return true;
     }
     
+    protected void prepareForNewGame()
+    {
+        this.guessWordPicked = "";
+        
+        this.opponentHasPickedGuessWord = false;
+        
+        this.turnToGo = this.turnToGo.nextTurn();
+    }
+    
     // - Presenter interface -
     
     @Override
     public void start()
     {
         Log.v("GameSessionPresenter", "Start");
-        
-        isActive = true;
         
         String otherPlayerName = initialConnection != null ? initialConnection.otherPlayerName : "Unknown";
         String otherPlayerAddress = initialConnection != null ? initialConnection.otherPlayerAddress : "?";
@@ -109,7 +101,7 @@ public class GameSessionPresenter implements GameSessionContract.Presenter, Comm
     @Override
     public void goToGameplayScreen(String guessWord)
     {
-        if (!isActive)
+        if (waitingForNextGame)
         {
             return;
         }
@@ -137,6 +129,8 @@ public class GameSessionPresenter implements GameSessionContract.Presenter, Comm
             SharedResources.getShared().setGameSession(gameSession);
             
             view.goToGameplayScreen();
+    
+            waitingForNextGame = true;
         }
         else
         {
@@ -151,27 +145,11 @@ public class GameSessionPresenter implements GameSessionContract.Presenter, Comm
     {
         Log.v("GameSessionPresenter", "Leave game");
         
-        isActive = false;
-        
         communicator.detachObserver(Integer.toHexString(System.identityHashCode(this)));
         
         communicator.stop();
         
         view.leave();
-    }
-    
-    @Override
-    public void prepareForNewGame()
-    {
-        this.isActive = false;
-        
-        this.guessWordPicked = "";
-        this.turnValue = 0;
-        
-        this.opponentHasPickedGuessWord = false;
-        this.opponentPickedTurn = 0;
-        
-        this.turnToGo = this.turnToGo.nextTurn();
     }
     
     // - CommunicatorObserver interface -
@@ -230,7 +208,7 @@ public class GameSessionPresenter implements GameSessionContract.Presenter, Comm
     @Override
     public void opponentPickedPlaySession() 
     {
-        if (!isActive)
+        if (waitingForNextGame)
         {
             return;
         }
@@ -244,7 +222,6 @@ public class GameSessionPresenter implements GameSessionContract.Presenter, Comm
         Log.v("GameSessionPresenter", "Opponent picked guess word!");
         
         opponentHasPickedGuessWord = true;
-        opponentPickedTurn = turnValue;
         
         view.setOpponentStatus("Opponent picked a guess word!");
         
@@ -253,6 +230,23 @@ public class GameSessionPresenter implements GameSessionContract.Presenter, Comm
         {
             goToGameplayScreen(guessWordPicked);
         }
+    }
+    
+    @Override
+    public void nextGame()
+    {
+        if (!waitingForNextGame)
+        {
+            return;
+        }
+        
+        Log.v("GameSessionPresenter", "Opponent is calling for next game!");
+        
+        waitingForNextGame = false;
+        
+        prepareForNewGame();
+        
+        view.nextGame();
     }
     
     @Override

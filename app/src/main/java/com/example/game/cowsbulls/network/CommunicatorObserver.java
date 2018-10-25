@@ -19,6 +19,7 @@ public interface CommunicatorObserver
     
     // Game Pick Word scene
     void opponentPickedPlaySession();
+    void nextGame();
     
     // Game Play scene
     void opponentGuess(String guess);

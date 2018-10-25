@@ -1,6 +1,8 @@
 package com.example.game.cowsbulls.scenes.gamesetup;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.example.game.cowsbulls.game.GameConstants;
 import com.example.game.cowsbulls.game.GameTurn;
@@ -22,25 +24,15 @@ public class GameSetupPresenter implements GameSetupContract.Presenter, Communic
     private GameTurn opponentPickedTurnToGo;
     private boolean opponentSentRequest;
     
-    public GameSetupPresenter(GameSetupContract.View view, Communicator communicator, CommunicatorInitialConnection initialConnection)
+    public GameSetupPresenter(@NonNull GameSetupContract.View view, @NonNull Communicator communicator, @NonNull CommunicatorInitialConnection initialConnection)
     {
-        this.view = view;
+        this.view = checkNotNull(view, "View cannot be null");
         
-        this.communicator = communicator;
-        
-        if (this.communicator == null)
-        {
-            this.communicator = SharedResources.getShared().getCommunicator();
-        }
+        this.communicator = checkNotNull(communicator, "Communicator cannot be null");
         
         this.communicator.attachObserver(this, Integer.toHexString(System.identityHashCode(this)));
         
-        this.initialConnection = initialConnection;
-        
-        if (this.initialConnection == null)
-        {
-            this.initialConnection = SharedResources.getShared().getCommunicatorInitialConnection();
-        }
+        this.initialConnection = checkNotNull(initialConnection, "InitialConnection cannot be null");
         
         this.view.setPresenter(this);
         
@@ -273,6 +265,12 @@ public class GameSetupPresenter implements GameSetupContract.Presenter, Communic
     
     @Override
     public void opponentPickedPlaySession() {}
+    
+    @Override
+    public void nextGame()
+    {
+        
+    }
     
     @Override
     public void opponentGuess(String guess) {}

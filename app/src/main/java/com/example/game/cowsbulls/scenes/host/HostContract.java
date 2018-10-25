@@ -2,7 +2,6 @@ package com.example.game.cowsbulls.scenes.host;
 
 import com.example.game.cowsbulls.BaseView;
 import com.example.game.cowsbulls.BasePresenter;
-import com.example.game.cowsbulls.network.Communicator;
 
 public interface HostContract
 {
@@ -19,7 +18,9 @@ public interface HostContract
         void showDisconnected();
         void showOpponentQuit();
         
-        void beginConnect();
-        void timeout();
+        void clientBeginConnect();
+        void clientTimeout();
+        
+        void failedToStart(String error);
     }
 }

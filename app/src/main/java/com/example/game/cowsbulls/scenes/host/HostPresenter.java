@@ -1,6 +1,8 @@
 package com.example.game.cowsbulls.scenes.host;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.example.game.cowsbulls.network.CommunicatorHost;
 import com.example.game.cowsbulls.network.CommunicatorInitialConnection;
@@ -12,9 +14,9 @@ public class HostPresenter implements HostContract.Presenter, CommunicatorObserv
     private HostContract.View view;
     private CommunicatorHost communicator;
     
-    public HostPresenter(HostContract.View view)
+    public HostPresenter(@NonNull HostContract.View view)
     {
-        this.view = view;
+        this.view = checkNotNull(view, "View cannot be null");
         
         this.view.setPresenter(this);
         
@@ -33,7 +35,13 @@ public class HostPresenter implements HostContract.Presenter, CommunicatorObserv
     {
         Log.v("HostPresenter", "Start");
         
-        communicator.start();
+        try {
+            communicator.start();
+        }
+        catch (Exception e)
+        {
+            view.failedToStart(e.toString());
+        }
     }
     
     @Override
@@ -85,7 +93,7 @@ public class HostPresenter implements HostContract.Presenter, CommunicatorObserv
     {
         Log.v("HostPresenter", "Connected with client! Attempting to start formal connection!");
         
-        view.beginConnect();
+        view.clientBeginConnect();
     }
     
     @Override
@@ -109,7 +117,7 @@ public class HostPresenter implements HostContract.Presenter, CommunicatorObserv
     @Override
     public void timeout() 
     {
-        
+        view.clientTimeout();
     }
     
     @Override
@@ -117,6 +125,12 @@ public class HostPresenter implements HostContract.Presenter, CommunicatorObserv
     
     @Override
     public void opponentPickedPlaySession() {}
+    
+    @Override
+    public void nextGame()
+    {
+        
+    }
     
     @Override
     public void opponentGuess(String guess) {}

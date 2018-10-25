@@ -2,7 +2,6 @@ package com.example.game.cowsbulls.scenes.gamesetup;
 
 import com.example.game.cowsbulls.BaseView;
 import com.example.game.cowsbulls.BasePresenter;
-import com.example.game.cowsbulls.network.Communicator;
 
 public interface GameSetupContract
 {
