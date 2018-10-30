@@ -1,6 +1,6 @@
 Created: 2018 October
 
-Technologies: Android SDK 16, com.google.guava:guava:26.0-android, com.chaos.view:pinview:1.4.2
+Technologies: Android SDK 16, Guava (com.google.guava:guava:26.0-android), PinView (com.chaos.view:pinview:1.4.2)
 
 Design: MVP (Model=data, View=interface, Presenter=data/interface bridge,state controller)
 
