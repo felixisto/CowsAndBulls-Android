@@ -398,7 +398,10 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
     @Override
     public void stop()
     {
-        sendQuitMessage();
+        if (writer != null)
+        {
+            sendQuitMessage();
+        }
         
         reset();
     }
@@ -454,6 +457,15 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
         Log.v("CommunicatorClient", "Sending guess correct message to server");
     
         CommunicatorMessage message = CommunicatorMessage.createWriteMessage(CommunicatorCommands.GAMECORRECTGUESS);
+        writer.send(message.getData());
+    }
+    
+    @Override
+    public void sendGameChatMessage(String chat)
+    {
+        Log.v("CommunicatorClient", "Sending game chat message to server");
+        
+        CommunicatorMessage message = CommunicatorMessage.createWriteMessage(CommunicatorCommands.GAMECHAT, chat);
         writer.send(message.getData());
     }
     
@@ -614,6 +626,26 @@ public class CommunicatorClient implements Communicator, CommunicatorReaderDeleg
                     }
                 };
                 
+                mainLoop.post(myRunnable);
+                break; }
+            case CommunicatorCommands.GAMECHAT: {
+                // Alert the observers in the main thread
+                Handler mainLoop = new Handler(Looper.getMainLooper());
+        
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        for (CommunicatorObserverValue observerValue : observers.values())
+                        {
+                            if (observerValue.value() != null)
+                            {
+                                observerValue.value().opponentChatMessage(parameter);
+                            }
+                        }
+                    }
+                };
+        
                 mainLoop.post(myRunnable);
                 break; }
             case CommunicatorCommands.GAMENEXT: {

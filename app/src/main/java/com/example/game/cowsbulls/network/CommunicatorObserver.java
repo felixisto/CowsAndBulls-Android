@@ -25,4 +25,5 @@ public interface CommunicatorObserver
     void opponentGuess(String guess);
     void incorrectGuessResponse(String response);
     void correctGuessResponse();
+    void opponentChatMessage(String message);
 }

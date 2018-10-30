@@ -257,4 +257,7 @@ public class GameSessionPresenter implements GameSessionContract.Presenter, Comm
     
     @Override
     public void correctGuessResponse() {}
+    
+    @Override
+    public void opponentChatMessage(String message) {}
 }

@@ -68,11 +68,24 @@ public class CommunicatorMessage
     
     private CommunicatorMessage(int parameterLength, String command, String parameter)
     {
+        if (parameterLength <= 0)
+        {
+            parameterLength = 0;
+            parameter = "";
+        }
+        
         this.commandLength = command.length();
         this.parameterLength = parameterLength > 0 ? parameterLength : 1;
         
         this.data = new StringBuilder();
+        
         this.data.append(command);
+        
+        if (parameter.length() > parameterLength)
+        {
+            parameter = parameter.substring(0, parameterLength);
+        }
+        
         this.data.append(parameter);
     }
     

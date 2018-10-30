@@ -216,7 +216,9 @@ public class GameSetupFragment extends Fragment implements GameSetupContract.Vie
     @Override
     public void lostConnectionAttemptingToReconnect()
     {
-        Snackbar snackbar = Snackbar.make(getView(), "Lost connection, attempting to reconnect...", Snackbar.LENGTH_LONG);
+        View rootView = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
+        
+        Snackbar snackbar = Snackbar.make(rootView, "Lost connection, attempting to reconnect...", Snackbar.LENGTH_INDEFINITE);
         
         snackbar.show();
     }
@@ -224,7 +226,9 @@ public class GameSetupFragment extends Fragment implements GameSetupContract.Vie
     @Override
     public void reconnected()
     {
-        Snackbar snackbar = Snackbar.make(getView(), "Reconnected!", Snackbar.LENGTH_LONG);
+        View rootView = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
+        
+        Snackbar snackbar = Snackbar.make(rootView, "Reconnected!", 5000);
         
         snackbar.show();
     }

@@ -40,6 +40,9 @@ public class JoinPresenter implements JoinContract.Presenter, CommunicatorObserv
         
         // Set the global shared communicator for the application
         SharedResources.getShared().setCommunicator(communicator);
+        
+        // View alert
+        view.connect(host);
     }
     
     @Override
@@ -137,4 +140,7 @@ public class JoinPresenter implements JoinContract.Presenter, CommunicatorObserv
     
     @Override
     public void correctGuessResponse() {}
+    
+    @Override
+    public void opponentChatMessage(String message) {}
 }

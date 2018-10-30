@@ -398,6 +398,15 @@ public class CommunicatorHost implements Communicator, CommunicatorReaderDelegat
     }
     
     @Override
+    public void sendGameChatMessage(String chat)
+    {
+        Log.v("CommunicatorHost", "Sending game chat message to server");
+        
+        CommunicatorMessage message = CommunicatorMessage.createWriteMessage(CommunicatorCommands.GAMECHAT, chat);
+        writer.send(message.getData());
+    }
+    
+    @Override
     public void sendGameNextMessage()
     {
         Log.v("CommunicatorHost", "Sending next game message to client");
@@ -534,6 +543,26 @@ public class CommunicatorHost implements Communicator, CommunicatorReaderDelegat
                     }
                 };
                 
+                mainLoop.post(myRunnable);
+                break; }
+            case CommunicatorCommands.GAMECHAT: {
+                // Alert the observers in the main thread
+                Handler mainLoop = new Handler(Looper.getMainLooper());
+        
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        for (CommunicatorObserverValue observerValue : observers.values())
+                        {
+                            if (observerValue.value() != null)
+                            {
+                                observerValue.value().opponentChatMessage(parameter);
+                            }
+                        }
+                    }
+                };
+        
                 mainLoop.post(myRunnable);
                 break; }
             case CommunicatorCommands.GAMECORRECTGUESS: {

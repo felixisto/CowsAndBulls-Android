@@ -70,9 +70,9 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
                 if (s.length() == pinentry.getItemCount())
                 {
                     // Hide keyboard, lose focus
-                    pinentry.clearFocus();
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(GameSessionActivity.INPUT_METHOD_SERVICE);
-                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                    // Reset chat field
+                    InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(pinentry.getWindowToken(), 0);
                     
                     // Alert presenter
                     presenter.goToGameplayScreen(s.toString());
@@ -184,7 +184,9 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
     @Override
     public void lostConnectionAttemptingToReconnect()
     {
-        Snackbar snackbar = Snackbar.make(getView(), "Lost connection, attempting to reconnect...", Snackbar.LENGTH_LONG);
+        View rootView = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
+        
+        Snackbar snackbar = Snackbar.make(rootView, "Lost connection, attempting to reconnect...", Snackbar.LENGTH_INDEFINITE);
         
         snackbar.show();
     }
@@ -192,7 +194,9 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
     @Override
     public void reconnected()
     {
-        Snackbar snackbar = Snackbar.make(getView(), "Reconnected!", Snackbar.LENGTH_LONG);
+        View rootView = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
+        
+        Snackbar snackbar = Snackbar.make(rootView, "Reconnected!", 5000);
         
         snackbar.show();
     }

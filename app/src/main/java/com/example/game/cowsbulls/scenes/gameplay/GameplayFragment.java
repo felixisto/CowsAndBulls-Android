@@ -11,10 +11,14 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.game.cowsbulls.R;
@@ -29,6 +33,7 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
     private TextView labelInfo;
     private TextView labelYourGuessWord;
     private Button buttonGuess;
+    private Button buttonChat;
     private TextView labelTurn;
     private View scrollLog;
     private TextView labelScrollLog;
@@ -38,6 +43,11 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
     private Button buttonGuessCancel;
     private TextView labelGuessOpponentWord;
     private PinView pinentry;
+    
+    private View layoutChat;
+    private Button buttonChatCancel;
+    private TextView labelChat;
+    private EditText fieldChat;
     
     private View layoutOutcome;
     private TextView labelOutcome;
@@ -68,6 +78,7 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
         labelInfo = root.findViewById(R.id.labelInfo);
         labelYourGuessWord = root.findViewById(R.id.labelYourGuessWord);
         buttonGuess = root.findViewById(R.id.buttonGuess);
+        buttonChat = root.findViewById(R.id.buttonChat);
         labelTurn = root.findViewById(R.id.labelTurn);
         scrollLog = root.findViewById(R.id.scrollLog);
         labelScrollLog = root.findViewById(R.id.labelScrollLog);
@@ -77,6 +88,11 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
         buttonGuessCancel = root.findViewById(R.id.buttonGuessCancel);
         labelGuessOpponentWord = root.findViewById(R.id.labelGuessOpponentWord);
         pinentry = root.findViewById(R.id.pinentry);
+        
+        layoutChat = root.findViewById(R.id.layoutChat);
+        buttonChatCancel = root.findViewById(R.id.buttonChatCancel);
+        labelChat = root.findViewById(R.id.labelChat);
+        fieldChat = root.findViewById(R.id.fieldChat);
         
         layoutOutcome = root.findViewById(R.id.layoutOutcome);
         labelOutcome = root.findViewById(R.id.labelOutcome);
@@ -101,7 +117,8 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
                 if (s.length() == pinentry.getItemCount())
                 {
                     // Hide keyboard, lose focus
-                    pinentry.clearFocus();
+                    InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(pinentry.getWindowToken(), 0);
                     
                     // Alert presenter
                     presenter.guess(s.toString());
@@ -118,13 +135,14 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
             @Override
             public void afterTextChanged(Editable s) {}
         });
-    
+        
         buttonGuessCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
                 // Hide keyboard, lose focus
-                pinentry.clearFocus();
+                InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(pinentry.getWindowToken(), 0);
                 
                 // Reset pincode text
                 pinentry.setText("");
@@ -132,6 +150,60 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
                 // Hide pincode layout, show everything else
                 layoutBase.setVisibility(View.VISIBLE);
                 layoutGuess.setVisibility(View.INVISIBLE);
+            }
+        });
+        
+        buttonChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                // Show chat layout, hide everything else
+                layoutBase.setVisibility(View.INVISIBLE);
+                layoutChat.setVisibility(View.VISIBLE);
+            }
+        });
+        
+        buttonChatCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                // Reset chat field
+                InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(fieldChat.getWindowToken(), 0);
+                
+                // Reset chat field
+                fieldChat.setText("");
+                
+                // Hide chat layout, show everything else
+                layoutBase.setVisibility(View.VISIBLE);
+                layoutChat.setVisibility(View.INVISIBLE);
+            }
+        });
+    
+        fieldChat.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) 
+            {
+                if (actionId == EditorInfo.IME_ACTION_DONE)
+                {
+                    // Send chat message
+                    presenter.chat(fieldChat.getText().toString());
+                    
+                    // Hide keyboard, lose focus
+                    InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(fieldChat.getWindowToken(), 0);
+                    
+                    // Reset chat field
+                    fieldChat.setText("");
+                    
+                    // Hide chat layout, show everything else
+                    layoutBase.setVisibility(View.VISIBLE);
+                    layoutChat.setVisibility(View.INVISIBLE);
+                    
+                    return true;
+                }
+                
+                return false;
             }
         });
         
@@ -273,9 +345,9 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
     @Override
     public void lostConnectionAttemptingToReconnect()
     {
-        if (getView() == null) {return;}
+        View rootView = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
         
-        Snackbar snackbar = Snackbar.make(getView(), "Lost connection, attempting to reconnect...", Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(rootView, "Lost connection, attempting to reconnect...", Snackbar.LENGTH_INDEFINITE);
         
         snackbar.show();
     }
@@ -283,9 +355,9 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
     @Override
     public void reconnected()
     {
-        if (getView() == null) {return;}
+        View rootView = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
         
-        Snackbar snackbar = Snackbar.make(getView(), "Reconnected!", Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(rootView, "Reconnected!", 5000);
         
         snackbar.show();
     }

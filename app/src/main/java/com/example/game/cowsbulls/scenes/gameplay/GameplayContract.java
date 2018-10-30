@@ -12,6 +12,8 @@ public interface GameplayContract
         void goBack();
         
         void guess(String guess);
+        
+        void chat(String message);
     }
     
     interface View extends BaseView<Presenter>

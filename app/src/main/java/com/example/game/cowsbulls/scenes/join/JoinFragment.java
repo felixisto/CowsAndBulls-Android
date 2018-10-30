@@ -2,6 +2,7 @@ package com.example.game.cowsbulls.scenes.join;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.os.Bundle;
 import android.content.Context;
@@ -18,6 +19,8 @@ import com.example.game.cowsbulls.scenes.gamesetup.GameSetupActivity;
 
 public class JoinFragment extends Fragment implements JoinContract.View
 {
+    static public String CLIENT_LAST_HOST_ADDRESS_KEY = "CLIENT_LAST_HOST_ADDRESS_KEY";
+    
     private JoinContract.Presenter presenter;
     
     private Button buttonConnect;
@@ -52,11 +55,17 @@ public class JoinFragment extends Fragment implements JoinContract.View
         buttonConnect.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 presenter.tryConnectingToHost(fieldHostAddress.getText().toString());
-                
-                buttonConnect.setEnabled(false);
-                fieldHostAddress.setEnabled(false);
             }
         });
+        
+        SharedPreferences preferences = getContext().getSharedPreferences(SharedPreferences.class.getClass().getSimpleName(), Context.MODE_PRIVATE);
+        
+        String lastHostAddress = preferences.getString(CLIENT_LAST_HOST_ADDRESS_KEY, "");
+        
+        if (lastHostAddress.length() > 0)
+        {
+            fieldHostAddress.setText(lastHostAddress);
+        }
         
         return root;
     }
@@ -113,6 +122,19 @@ public class JoinFragment extends Fragment implements JoinContract.View
     public void showOpponentQuit()
     {
 
+    }
+    
+    @Override
+    public void connect(String hostAddress)
+    {
+        buttonConnect.setEnabled(false);
+        fieldHostAddress.setEnabled(false);
+        
+        // Save the address, it will be used as default address next time the CLIENT screen starts
+        SharedPreferences preferences = getContext().getSharedPreferences(SharedPreferences.class.getClass().getSimpleName(), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(CLIENT_LAST_HOST_ADDRESS_KEY, hostAddress);
+        editor.commit();
     }
     
     @Override

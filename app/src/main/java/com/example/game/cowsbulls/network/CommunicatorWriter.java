@@ -2,6 +2,8 @@ package com.example.game.cowsbulls.network;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;

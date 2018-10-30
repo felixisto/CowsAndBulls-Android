@@ -280,4 +280,7 @@ public class GameSetupPresenter implements GameSetupContract.Presenter, Communic
     
     @Override
     public void correctGuessResponse() {}
+    
+    @Override
+    public void opponentChatMessage(String message) {}
 }

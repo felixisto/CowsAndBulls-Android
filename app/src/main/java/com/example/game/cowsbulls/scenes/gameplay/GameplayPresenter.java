@@ -115,6 +115,18 @@ public class GameplayPresenter implements GameplayContract.Presenter, Communicat
         }
     }
     
+    @Override
+    public void chat(String message)
+    {
+        Log.v("GameplayPresenter", "Sending chat message to opponent");
+        
+        gameSession.addMyChatTextToLog(message);
+        
+        view.updateLog(gameSession.getLog(initialConnection.otherPlayerName));
+        
+        communicator.sendGameChatMessage(message);
+    }
+    
     // - CommunicatorObserver interface -
     
     @Override
@@ -245,5 +257,15 @@ public class GameplayPresenter implements GameplayContract.Presenter, Communicat
         {
             
         }
+    }
+    
+    @Override
+    public void opponentChatMessage(String message)
+    {
+        Log.v("GameplayPresenter", "Opponent says '" + message + "'");
+        
+        gameSession.addOpponentChatTextToLog(message);
+        
+        view.updateLog(gameSession.getLog(initialConnection.otherPlayerName));
     }
 }

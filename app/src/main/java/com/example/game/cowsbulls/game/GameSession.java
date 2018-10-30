@@ -94,8 +94,8 @@ public class GameSession
         }
         
         gameTurn += 1;
-        
-        addToLog(YOU_LABEL + " " + response);
+    
+        addGuessTextToLog(YOU_LABEL + " " + response);
     }
     
     public GuessResult opponentIsGuessing(String guessCharactersAsString) throws GameError
@@ -119,7 +119,7 @@ public class GameSession
     
         GuessResult guessResult = GuessCharacter.guessResult(guessWord, GuessCharacter.stringToGuessCharacters(guessCharactersAsString));
         
-        addToLog(OPPONENT_LABEL + " " + guessResult.messageWithGuess);
+        addGuessTextToLog(OPPONENT_LABEL + " " + guessResult.messageWithGuess);
         
         if (guessResult.hasSuccessfullyGuessed())
         {
@@ -129,7 +129,21 @@ public class GameSession
         return guessResult;
     }
     
-    private void addToLog(String string)
+    public void addMyChatTextToLog(String string)
+    {
+        String temp = YOU_LABEL + ": " + string + "\n";
+        temp = temp.concat(log);
+        log = temp;
+    }
+    
+    public void addOpponentChatTextToLog(String string)
+    {
+        String temp = OPPONENT_LABEL + ": " + string + "\n";
+        temp = temp.concat(log);
+        log = temp;
+    }
+    
+    private void addGuessTextToLog(String string)
     {
         String temp = String.valueOf(gameTurn-1) + ". " + string + "\n";
         temp = temp.concat(log);

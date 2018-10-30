@@ -140,4 +140,7 @@ public class HostPresenter implements HostContract.Presenter, CommunicatorObserv
     
     @Override
     public void correctGuessResponse() {}
+    
+    @Override
+    public void opponentChatMessage(String message) {}
 }

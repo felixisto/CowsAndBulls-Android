@@ -18,6 +18,7 @@ public interface JoinContract
         void showDisconnected();
         void showOpponentQuit();
         
+        void connect(String hostAddress);
         void beginConnect();
         void connectionFailure(String error);
         void timeout();
