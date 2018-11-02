@@ -1,10 +1,12 @@
 package com.example.game.cowsbulls.network;
 
+import android.util.Log;
+
 public class CommunicatorMessage
 {
     static final int MESSAGE_LENGTH = 50;
     static final int MESSAGE_COMMAND_LENGTH = 5;
-    static final int MESSAGE_PARAMETER_LENGTH = MESSAGE_LENGTH-MESSAGE_COMMAND_LENGTH;
+    static final int MESSAGE_PARAMETER_LENGTH = MESSAGE_LENGTH - MESSAGE_COMMAND_LENGTH;
     static final char FILLER_CHARACTER = '\t';
     
     final int commandLength;
@@ -91,7 +93,7 @@ public class CommunicatorMessage
     
     public boolean isFullyWritten()
     {
-        return data.length() == MESSAGE_LENGTH;
+        return data.codePointCount(0, data.length()) == MESSAGE_LENGTH;
     }
     
     public String getCommand()
@@ -134,6 +136,11 @@ public class CommunicatorMessage
         while (!isFullyWritten())
         {
             data.append(FILLER_CHARACTER);
+            
+            if (getCommand().equals("GCHAT"))
+            {
+                Log.v("test", "fill with \\t - " + data);
+            }
         }
     }
 }
