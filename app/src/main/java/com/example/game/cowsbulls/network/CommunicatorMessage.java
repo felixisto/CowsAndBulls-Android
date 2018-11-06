@@ -2,6 +2,8 @@ package com.example.game.cowsbulls.network;
 
 import android.util.Log;
 
+import java.util.Arrays;
+
 public class CommunicatorMessage
 {
     static final int MESSAGE_LENGTH = 50;
@@ -81,19 +83,13 @@ public class CommunicatorMessage
         
         this.data = new StringBuilder();
         
-        this.data.append(command);
-        
-        if (parameter.length() > parameterLength)
-        {
-            parameter = parameter.substring(0, parameterLength);
-        }
-        
-        this.data.append(parameter);
+        append(command);
+        append(parameter);
     }
     
     public boolean isFullyWritten()
     {
-        return data.codePointCount(0, data.length()) == MESSAGE_LENGTH;
+        return data.toString().getBytes().length >= MESSAGE_LENGTH;
     }
     
     public String getCommand()
@@ -101,11 +97,34 @@ public class CommunicatorMessage
         return data.substring(0, commandLength);
     }
     
+    private String getParameterWithFillerChars()
+    {
+        byte[] dataAsByteArray = data.toString().getBytes();
+        byte[] byteArray = new byte[dataAsByteArray.length];
+        int byteArrayCount = 0;
+    
+        for (int i = 0; i < dataAsByteArray.length; i++)
+        {
+            if (i < commandLength)
+            {
+                continue;
+            }
+        
+            byteArray[byteArrayCount] = dataAsByteArray[i];
+            byteArrayCount++;
+        
+            if (i == MESSAGE_LENGTH)
+            {
+                break;
+            }
+        }
+        
+        return new String(Arrays.copyOf(byteArray, byteArrayCount));
+    }
+    
     public String getParameter()
     {
-        String parameter = data.substring(commandLength);
-        
-        return parameter.replaceAll(String.valueOf(FILLER_CHARACTER), "");
+        return getParameterWithFillerChars().replaceAll(String.valueOf(FILLER_CHARACTER), "");
     }
     
     public String getData()
@@ -113,22 +132,34 @@ public class CommunicatorMessage
         return data.toString();
     }
     
-    public void clear()
+    public int getDataBytesCount()
     {
-        data = new StringBuilder();
+        return data.toString().getBytes().length;
+    }
+    
+    public void clearFirstFilledMessage()
+    {
+        if (getDataBytesCount() > MESSAGE_LENGTH)
+        {
+            String command = getCommand();
+            String parameter = getParameterWithFillerChars();
+            
+            int beginIndex = command.length() + parameter.length();
+            
+            String newDataValue = data.toString().substring(beginIndex);
+            
+            data = new StringBuilder();
+            data.append(newDataValue);
+        }
+        else
+        {
+            data = new StringBuilder();
+        }
     }
     
     public void append(String string)
     {
-        for (int e = 0; e < string.length(); e++)
-        {
-            data.append(string.charAt(e));
-            
-            if (isFullyWritten())
-            {
-                return;
-            }
-        }
+        data.append(string);
     }
     
     public void fillMessage()
@@ -136,11 +167,6 @@ public class CommunicatorMessage
         while (!isFullyWritten())
         {
             data.append(FILLER_CHARACTER);
-            
-            if (getCommand().equals("GCHAT"))
-            {
-                Log.v("test", "fill with \\t - " + data);
-            }
         }
     }
 }

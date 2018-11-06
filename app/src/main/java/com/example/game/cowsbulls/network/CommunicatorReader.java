@@ -2,6 +2,8 @@ package com.example.game.cowsbulls.network;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -115,29 +117,32 @@ class CommunicatorReaderLoop implements Runnable
                 break;
             }
             
-            // Read output from stream
-            try
+            // If message is not fully written, read from socket
+            if (!data.isFullyWritten())
             {
-                char[] bytes = new char[CommunicatorMessage.MESSAGE_LENGTH];
-                int length = delegate.getReader().read(bytes, 0, CommunicatorMessage.MESSAGE_LENGTH);
-                
-                if (length > 0)
+                // Read output from stream
+                try
                 {
-                    StringBuilder buffer = new StringBuilder();
-                    
-                    for (int i = 0; i < CommunicatorMessage.MESSAGE_LENGTH; i++)
+                    char[] bytes = new char[CommunicatorMessage.MESSAGE_LENGTH];
+                    int length = delegate.getReader().read(bytes, 0, CommunicatorMessage.MESSAGE_LENGTH);
+        
+                    if (length > 0)
                     {
-                        buffer.append(bytes[i]);
+                        StringBuilder buffer = new StringBuilder();
+                        
+                        for (int i = 0; i < bytes.length; i++)
+                        {
+                            buffer.append(bytes[i]);
+                        }
+                        
+                        data.append(buffer.toString());
+                        Log.v("Test", "RECEIVED: " + buffer.toString() + " length:" + String.valueOf(data.getDataBytesCount()));
                     }
-                    
-                    String receivedMessage = buffer.toString();
-                    
-                    data.append(receivedMessage.toString());
                 }
-            }
-            catch (IOException e)
-            {
-                
+                catch (IOException e)
+                {
+        
+                }
             }
             
             // Message was received
@@ -174,9 +179,11 @@ class CommunicatorReaderLoop implements Runnable
                     }
                 };
                 
-                mainLoop.post(myRunnable);
+                // Reset
+                data.clearFirstFilledMessage();
                 
-                data.clear();
+                // Repeat
+                mainLoop.post(myRunnable);
             }
         }
     }
