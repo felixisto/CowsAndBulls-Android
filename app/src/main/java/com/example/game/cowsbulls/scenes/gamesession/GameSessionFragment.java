@@ -5,14 +5,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
@@ -154,8 +157,6 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
     @Override
     public void setOpponentStatus(String status)
     {
-        final TextView labelOpponentStatus = getView().findViewById(R.id.labelOpponentStatus);
-    
         labelOpponentStatus.setText(status);
     }
     
@@ -165,7 +166,6 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
         labelTip.setText("Enter " + String.valueOf(length) + " digit guess word");
         
         pinentry.setItemCount(length);
-        
     }
     
     @Override
@@ -184,7 +184,19 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
     @Override
     public void lostConnectionAttemptingToReconnect()
     {
-        View rootView = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
+        FragmentActivity activity = getActivity();
+        
+        if (activity == null) {return;}
+        
+        Window window = activity.getWindow();
+        
+        if (window == null) {return;}
+        
+        View decorView = window.getDecorView();
+        
+        if (decorView == null) {return;}
+        
+        View rootView = decorView.findViewById(android.R.id.content);
         
         Snackbar snackbar = Snackbar.make(rootView, "Lost connection, attempting to reconnect...", Snackbar.LENGTH_INDEFINITE);
         
@@ -194,7 +206,17 @@ public class GameSessionFragment extends Fragment implements GameSessionContract
     @Override
     public void reconnected()
     {
-        View rootView = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
+        FragmentActivity activity = getActivity();
+        
+        if (activity == null) {return;}
+        
+        Window window = activity.getWindow();
+        
+        if (window == null) {return;}
+        
+        View decorView = window.getDecorView();
+        
+        View rootView = decorView.findViewById(android.R.id.content);
         
         Snackbar snackbar = Snackbar.make(rootView, "Reconnected!", 5000);
         

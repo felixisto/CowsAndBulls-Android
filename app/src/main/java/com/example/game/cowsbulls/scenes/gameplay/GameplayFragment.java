@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -345,7 +347,19 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
     @Override
     public void lostConnectionAttemptingToReconnect()
     {
-        View rootView = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
+        FragmentActivity activity = getActivity();
+        
+        if (activity == null) {return;}
+        
+        Window window = activity.getWindow();
+        
+        if (window == null) {return;}
+        
+        View decorView = window.getDecorView();
+        
+        if (decorView == null) {return;}
+        
+        View rootView = decorView.findViewById(android.R.id.content);
         
         Snackbar snackbar = Snackbar.make(rootView, "Lost connection, attempting to reconnect...", Snackbar.LENGTH_INDEFINITE);
         
@@ -355,7 +369,17 @@ public class GameplayFragment extends Fragment implements GameplayContract.View
     @Override
     public void reconnected()
     {
-        View rootView = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
+        FragmentActivity activity = getActivity();
+        
+        if (activity == null) {return;}
+        
+        Window window = activity.getWindow();
+        
+        if (window == null) {return;}
+        
+        View decorView = window.getDecorView();
+        
+        View rootView = decorView.findViewById(android.R.id.content);
         
         Snackbar snackbar = Snackbar.make(rootView, "Reconnected!", 5000);
         
