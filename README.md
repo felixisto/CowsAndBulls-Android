@@ -9,19 +9,19 @@ Usage: Game
 Cows and Bulls video game on Android. Must be played on a LAN network. This is the numerical version of the popular code-breaking game "Cows and Bulls". Compatible with my [iOS version of Cows and Bulls](https://github.com/felixisto/CowsAndBulls).
 
 # Main Screen
-![alt text](https://github.com/felixisto/CowsAndBulls-Android/blob/master/Screenshots/scrn0.png)
+![alt text](https://github.com/felixisto/CowsAndBulls-Android/blob/master/Screenshots/scrn1.jpg)
 
 # Hosting game
-![alt text](https://github.com/felixisto/CowsAndBulls-Android/blob/master/Screenshots/scrn1.png)
+![alt text](https://github.com/felixisto/CowsAndBulls-Android/blob/master/Screenshots/scrn2.jpg)
 
 # Game setup
-![alt text](https://github.com/felixisto/CowsAndBulls-Android/blob/master/Screenshots/scrn2.png)
+![alt text](https://github.com/felixisto/CowsAndBulls-Android/blob/master/Screenshots/scrn3.jpg)
 
 # Pick guess word
-![alt text](https://github.com/felixisto/CowsAndBulls-Android/blob/master/Screenshots/scrn3.png)
+![alt text](https://github.com/felixisto/CowsAndBulls-Android/blob/master/Screenshots/scrn4.jpg)
 
 # Play
-![alt text](https://github.com/felixisto/CowsAndBulls-Android/blob/master/Screenshots/scrn4.png)
+![alt text](https://github.com/felixisto/CowsAndBulls-Android/blob/master/Screenshots/scrn5.jpg)
 
 # Outcome screen
-![alt text](https://github.com/felixisto/CowsAndBulls-Android/blob/master/Screenshots/scrn5.png)
+![alt text](https://github.com/felixisto/CowsAndBulls-Android/blob/master/Screenshots/scrn6.jpg)
